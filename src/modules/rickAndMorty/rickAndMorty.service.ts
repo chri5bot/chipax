@@ -1,15 +1,10 @@
 import { Injectable, HttpService } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-
 import AppLog from 'logger/logger.service';
+import { reduceArrayToString, charCounter } from 'helpers/strings';
 
 @Injectable()
 export default class RickAndMortyService {
-  constructor(
-    private readonly log: AppLog,
-    private httpService: HttpService,
-    private configService: ConfigService, // TODO: add rick and morty api in env file
-  ) {
+  constructor(private readonly log: AppLog, private httpService: HttpService) {
     this.log.setContext(RickAndMortyService.name);
   }
 
@@ -135,11 +130,51 @@ export default class RickAndMortyService {
    */
   async charCounterExercise(): Promise<any> {
     this.log.debug('Char Counter Exercise');
-
+    const location = { char: 'l', resource: 'location' };
     const allLocations = await this.getAllLocations();
-    const allCharacters = await this.getAllCharacters();
-    const allEpisodes = await this.getAllEpisodes();
+    const reducedLocation = reduceArrayToString(
+      allLocations.map(({ results }) => results.map(({ name }) => name)),
+    );
+    const charCounterLocations = charCounter(reducedLocation, location.char);
 
-    return allCharacters;
+    const episode = { char: 'e', resource: 'episode' };
+    const allEpisodes = await this.getAllEpisodes();
+    const reducedEpisodes = reduceArrayToString(
+      allEpisodes.map(({ results }) => results.map(({ name }) => name)),
+    );
+    const charCounterEpisodes = charCounter(reducedEpisodes, episode.char);
+
+    const character = { char: 'c', resource: 'character' };
+    const allCharacters = await this.getAllEpisodes();
+    const reducedCharacters = reduceArrayToString(
+      allCharacters.map(({ results }) => results.map(({ name }) => name)),
+    );
+    const charCounterCharacters = charCounter(
+      reducedCharacters,
+      character.char,
+    );
+
+    return {
+      exercise_name: 'Char counter',
+      time: '',
+      in_time: true,
+      results: [
+        {
+          char: location.char,
+          count: charCounterLocations,
+          resource: location.resource,
+        },
+        {
+          char: episode.char,
+          count: charCounterEpisodes,
+          resource: episode.resource,
+        },
+        {
+          char: character.char,
+          count: charCounterCharacters,
+          resource: character.resource,
+        },
+      ],
+    };
   }
 }
