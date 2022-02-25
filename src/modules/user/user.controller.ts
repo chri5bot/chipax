@@ -21,6 +21,6 @@ export default class UserController {
   })
   @Post('user/signup')
   async login(@Request() req) {
-    return this.userService.userStardeosSignup(req.body);
+    return this.userService.userCHIPAXSignup(req.body);
   }
 }

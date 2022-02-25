@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-export default class StardeosUserBirthdateWrong extends HttpException {
+export default class CHIPAXUserBirthdateWrong extends HttpException {
   constructor() {
-    super(`Stardeos: Date wrong`, HttpStatus.BAD_REQUEST);
+    super(`CHIPAX: Date wrong`, HttpStatus.BAD_REQUEST);
   }
 }

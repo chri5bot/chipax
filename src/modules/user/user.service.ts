@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import AppLog from 'logger/logger.service';
-import StardeosUserBirthdateWrong from './exceptions/StardeosUserBirthdateWrong';
+import CHIPAXUserBirthdateWrong from './exceptions/CHIPAXUserBirthdateWrong';
 
 import validateBirthdate from 'helpers/validateBirthdate';
 
@@ -14,13 +14,13 @@ export default class UserService {
    * Signup user
    * @param {body} body
    */
-  async userStardeosSignup(body: any) {
+  async userCHIPAXSignup(body: any) {
     if (!body.birthDate) {
-      throw new StardeosUserBirthdateWrong();
+      throw new CHIPAXUserBirthdateWrong();
     }
 
     if (!validateBirthdate(body.birthDate)) {
-      throw new StardeosUserBirthdateWrong();
+      throw new CHIPAXUserBirthdateWrong();
     }
   }
 }

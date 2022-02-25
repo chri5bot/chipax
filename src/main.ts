@@ -27,9 +27,9 @@ async function bootstrap() {
 
   const configService: ConfigService = app.get(ConfigService);
 
-  const docsTitle = process.env.APPLICATION_NAME || 'STARDEOS';
+  const docsTitle = process.env.APPLICATION_NAME || 'CHIPAX';
 
-  const docsDescription = process.env.APPLICATION_DESCRIPTION || 'STARDEOS';
+  const docsDescription = process.env.APPLICATION_DESCRIPTION || 'CHIPAX';
 
   const options = new DocumentBuilder()
     .addBearerAuth()

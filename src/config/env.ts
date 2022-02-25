@@ -2,7 +2,7 @@ import { Logger } from '@nestjs/common';
 
 const logger: Logger = new Logger('ConfigModule');
 
-const ENV_PREFIX = 'STARDEOS';
+const ENV_PREFIX = 'CHIPAX';
 
 function wrap(...values: string[]): string {
   return values.join('_').toUpperCase();
