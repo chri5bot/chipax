@@ -22,4 +22,14 @@ export default class RickAndMortyController {
   async character() {
     return this.rickAndMortyService.fetchRickAndMortyCharacters();
   }
+
+  @Get('rick-and-morty/episode')
+  async episode() {
+    return this.rickAndMortyService.fetchRickAndMortyEpisodes();
+  }
+
+  @Get('rick-and-morty/location')
+  async location() {
+    return this.rickAndMortyService.fetchRickAndMortyLocations();
+  }
 }
