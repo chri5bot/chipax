@@ -49,7 +49,9 @@ export default class RickAndMortyService {
         .toPromise();
 
       return result?.data;
-    } catch (error) {}
+    } catch (error) {
+      this.log.error(error);
+    }
   }
 
   /**
@@ -65,15 +67,13 @@ export default class RickAndMortyService {
       promises.push(this.fetchRickAndMortyLocations(i));
     }
 
-    const result = Promise.all(promises)
+    return Promise.all(promises)
       .then((pages) => {
         return [...pages, firstPage];
       })
       .catch((e) => {
         this.log.error(e);
       });
-
-    return result;
   }
 
   /**
@@ -89,15 +89,13 @@ export default class RickAndMortyService {
       promises.push(this.fetchRickAndMortyCharacters(i));
     }
 
-    const result = Promise.all(promises)
+    return Promise.all(promises)
       .then((pages) => {
         return [...pages, firstPage];
       })
       .catch((e) => {
         this.log.error(e);
       });
-
-    return result;
   }
 
   /**
@@ -114,15 +112,13 @@ export default class RickAndMortyService {
       promises.push(this.fetchRickAndMortyEpisodes(i));
     }
 
-    const result = Promise.all(promises)
+    return Promise.all(promises)
       .then((pages) => {
         return [...pages, firstPage];
       })
       .catch((e) => {
         this.log.error(e);
       });
-
-    return result;
   }
 
   /**
@@ -130,34 +126,44 @@ export default class RickAndMortyService {
    */
   async charCounterExercise(): Promise<any> {
     this.log.debug('Char Counter Exercise');
+    const start = Date.now();
+    const allData = Promise.all([
+      this.getAllLocations(),
+      this.getAllEpisodes(),
+      this.getAllCharacters(),
+    ])
+      .then((responses) => {
+        return responses.map((response) => response);
+      })
+      .catch((e) => {
+        this.log.error(e);
+      });
+
+    const data = await allData;
     const location = { char: 'l', resource: 'location' };
-    const allLocations = await this.getAllLocations();
     const reducedLocation = reduceArrayToString(
-      allLocations.map(({ results }) => results.map(({ name }) => name)),
+      data[0]?.map(({ results }) => results.map(({ name }) => name)),
     );
     const charCounterLocations = charCounter(reducedLocation, location.char);
-
     const episode = { char: 'e', resource: 'episode' };
-    const allEpisodes = await this.getAllEpisodes();
     const reducedEpisodes = reduceArrayToString(
-      allEpisodes.map(({ results }) => results.map(({ name }) => name)),
+      data[1]?.map(({ results }) => results.map(({ name }) => name)),
     );
     const charCounterEpisodes = charCounter(reducedEpisodes, episode.char);
-
     const character = { char: 'c', resource: 'character' };
-    const allCharacters = await this.getAllEpisodes();
     const reducedCharacters = reduceArrayToString(
-      allCharacters.map(({ results }) => results.map(({ name }) => name)),
+      data[2]?.map(({ results }) => results.map(({ name }) => name)),
     );
     const charCounterCharacters = charCounter(
       reducedCharacters,
       character.char,
     );
+    const duration = Date.now() - start;
 
     return {
       exercise_name: 'Char counter',
-      time: '',
-      in_time: true,
+      time: duration,
+      in_time: 3000 >= duration,
       results: [
         {
           char: location.char,
