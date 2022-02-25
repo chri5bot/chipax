@@ -50,17 +50,42 @@ export default class RickAndMortyService {
   /**
    * Fetch Rick and Morty Locations
    */
-  async fetchRickAndMortyLocations(): Promise<any> {
+  async fetchRickAndMortyLocations(page = 1): Promise<any> {
     this.log.debug('Fetching rick and morty locations');
 
     try {
       const result = await this.httpService
-        .get('https://rickandmortyapi.com/api/location')
+        .get(`https://rickandmortyapi.com/api/location?page=${page}`)
         .toPromise();
 
       return result?.data;
     } catch (error) {
       this.log.error(error);
     }
+  }
+
+  /**
+   * Char counter exercise
+   */
+  async charCounterExercise(): Promise<any> {
+    this.log.debug('Char Counter Exercise');
+
+    const locations = await this.fetchRickAndMortyLocations();
+    const locationPages = locations?.info?.pages;
+
+    const locationPromises = [];
+    for (let i = 1; i <= locationPages; i++) {
+      locationPromises.push(this.fetchRickAndMortyLocations(i));
+    }
+
+    const locationNames = Promise.all(locationPromises)
+      .then((locations) => {
+        return locations.map(({ results }) => results.map(({ name }) => name));
+      })
+      .catch((e) => {
+        this.log.error(e);
+      });
+
+    return locationNames;
   }
 }

@@ -32,4 +32,9 @@ export default class RickAndMortyController {
   async location() {
     return this.rickAndMortyService.fetchRickAndMortyLocations();
   }
+
+  @Get('rick-and-morty/char-counter-exercise')
+  async counterExercise() {
+    return this.rickAndMortyService.charCounterExercise();
+  }
 }
