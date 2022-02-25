@@ -12,7 +12,7 @@ export default class RickAndMortyService {
    * Fetch Rick and Morty Characters
    */
   async fetchRickAndMortyCharacters(page = 1): Promise<any> {
-    this.log.debug('Fetching rick and morty characters');
+    this.log.debug(`Fetching rick and morty characters page n: ${page}`);
     try {
       const result = await this.httpService
         .get(`https://rickandmortyapi.com/api/character?page=${page}`)
@@ -27,7 +27,7 @@ export default class RickAndMortyService {
    * Fetch Rick and Morty Episodes
    */
   async fetchRickAndMortyEpisodes(page = 1): Promise<any> {
-    this.log.debug('Fetching rick and morty episodes');
+    this.log.debug(`Fetching rick and morty episodes page n: ${page}`);
     try {
       const result = await this.httpService
         .get(`https://rickandmortyapi.com/api/episode?page=${page}`)
@@ -42,7 +42,7 @@ export default class RickAndMortyService {
    * Fetch Rick and Morty Locations
    */
   async fetchRickAndMortyLocations(page = 1): Promise<any> {
-    this.log.debug('Fetching rick and morty locations');
+    this.log.debug(`Fetching rick and morty locations page n: ${page}`);
     try {
       const result = await this.httpService
         .get(`https://rickandmortyapi.com/api/location?page=${page}`)
@@ -127,7 +127,7 @@ export default class RickAndMortyService {
   async charCounterExercise(): Promise<any> {
     this.log.debug('Char Counter Exercise');
     const start = Date.now();
-    
+
     const allData = Promise.all([
       this.getAllLocations(),
       this.getAllEpisodes(),
@@ -167,7 +167,7 @@ export default class RickAndMortyService {
 
     return {
       exercise_name: 'Char counter',
-      time: duration,
+      time: `${duration} ms`,
       in_time: 3000 >= duration,
       results: [
         {
