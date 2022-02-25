@@ -16,14 +16,12 @@ export default class RickAndMortyService {
   /**
    * Fetch Rick and Morty Characters
    */
-  async fetchRickAndMortyCharacters(): Promise<any> {
+  async fetchRickAndMortyCharacters(page = 1): Promise<any> {
     this.log.debug('Fetching rick and morty characters');
-
     try {
       const result = await this.httpService
-        .get('https://rickandmortyapi.com/api/character')
+        .get(`https://rickandmortyapi.com/api/character?page=${page}`)
         .toPromise();
-
       return result?.data;
     } catch (error) {
       this.log.error(error);
@@ -33,14 +31,12 @@ export default class RickAndMortyService {
   /**
    * Fetch Rick and Morty Episodes
    */
-  async fetchRickAndMortyEpisodes(): Promise<any> {
+  async fetchRickAndMortyEpisodes(page = 1): Promise<any> {
     this.log.debug('Fetching rick and morty episodes');
-
     try {
       const result = await this.httpService
-        .get('https://rickandmortyapi.com/api/episode')
+        .get(`https://rickandmortyapi.com/api/episode?page=${page}`)
         .toPromise();
-
       return result?.data;
     } catch (error) {
       this.log.error(error);
@@ -52,16 +48,86 @@ export default class RickAndMortyService {
    */
   async fetchRickAndMortyLocations(page = 1): Promise<any> {
     this.log.debug('Fetching rick and morty locations');
-
     try {
       const result = await this.httpService
         .get(`https://rickandmortyapi.com/api/location?page=${page}`)
         .toPromise();
 
       return result?.data;
-    } catch (error) {
-      this.log.error(error);
+    } catch (error) {}
+  }
+
+  /**
+   * Get all locations of each page
+   */
+  async getAllLocations(): Promise<any> {
+    this.log.debug(`Get all locations`);
+    const firstPage = await this.fetchRickAndMortyLocations();
+    const numberPages = firstPage?.info?.pages;
+    const promises = [];
+
+    for (let i = 2; i <= numberPages; i++) {
+      promises.push(this.fetchRickAndMortyLocations(i));
     }
+
+    const result = Promise.all(promises)
+      .then((pages) => {
+        return [...pages, firstPage];
+      })
+      .catch((e) => {
+        this.log.error(e);
+      });
+
+    return result;
+  }
+
+  /**
+   * Get all characters of each page
+   */
+  async getAllCharacters(): Promise<any> {
+    this.log.debug(`Get all characters`);
+    const firstPage = await this.fetchRickAndMortyCharacters();
+    const numberPages = firstPage?.info?.pages;
+    const promises = [];
+
+    for (let i = 2; i <= numberPages; i++) {
+      promises.push(this.fetchRickAndMortyCharacters(i));
+    }
+
+    const result = Promise.all(promises)
+      .then((pages) => {
+        return [...pages, firstPage];
+      })
+      .catch((e) => {
+        this.log.error(e);
+      });
+
+    return result;
+  }
+
+  /**
+   * Get all episodes of each page
+   */
+  async getAllEpisodes(): Promise<any> {
+    this.log.debug(`Get all episodes`);
+
+    const firstPage = await this.fetchRickAndMortyEpisodes();
+    const numberPages = firstPage?.info?.pages;
+    const promises = [];
+
+    for (let i = 2; i <= numberPages; i++) {
+      promises.push(this.fetchRickAndMortyEpisodes(i));
+    }
+
+    const result = Promise.all(promises)
+      .then((pages) => {
+        return [...pages, firstPage];
+      })
+      .catch((e) => {
+        this.log.error(e);
+      });
+
+    return result;
   }
 
   /**
@@ -70,22 +136,10 @@ export default class RickAndMortyService {
   async charCounterExercise(): Promise<any> {
     this.log.debug('Char Counter Exercise');
 
-    const locations = await this.fetchRickAndMortyLocations();
-    const locationPages = locations?.info?.pages;
+    const allLocations = await this.getAllLocations();
+    const allCharacters = await this.getAllCharacters();
+    const allEpisodes = await this.getAllEpisodes();
 
-    const locationPromises = [];
-    for (let i = 1; i <= locationPages; i++) {
-      locationPromises.push(this.fetchRickAndMortyLocations(i));
-    }
-
-    const locationNames = Promise.all(locationPromises)
-      .then((locations) => {
-        return locations.map(({ results }) => results.map(({ name }) => name));
-      })
-      .catch((e) => {
-        this.log.error(e);
-      });
-
-    return locationNames;
+    return allCharacters;
   }
 }
