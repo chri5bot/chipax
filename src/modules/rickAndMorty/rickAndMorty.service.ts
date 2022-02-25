@@ -127,6 +127,7 @@ export default class RickAndMortyService {
   async charCounterExercise(): Promise<any> {
     this.log.debug('Char Counter Exercise');
     const start = Date.now();
+    
     const allData = Promise.all([
       this.getAllLocations(),
       this.getAllEpisodes(),
@@ -140,16 +141,19 @@ export default class RickAndMortyService {
       });
 
     const data = await allData;
+
     const location = { char: 'l', resource: 'location' };
     const reducedLocation = reduceArrayToString(
       data[0]?.map(({ results }) => results.map(({ name }) => name)),
     );
     const charCounterLocations = charCounter(reducedLocation, location.char);
+
     const episode = { char: 'e', resource: 'episode' };
     const reducedEpisodes = reduceArrayToString(
       data[1]?.map(({ results }) => results.map(({ name }) => name)),
     );
     const charCounterEpisodes = charCounter(reducedEpisodes, episode.char);
+
     const character = { char: 'c', resource: 'character' };
     const reducedCharacters = reduceArrayToString(
       data[2]?.map(({ results }) => results.map(({ name }) => name)),
@@ -158,6 +162,7 @@ export default class RickAndMortyService {
       reducedCharacters,
       character.char,
     );
+
     const duration = Date.now() - start;
 
     return {
