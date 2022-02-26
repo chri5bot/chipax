@@ -25,5 +25,5 @@ $ npm run test
 
 ## Para probar los ejercicios tienes que realizar un get desde postman
 
-1. localhost:5001/rick-and-morty/char-counter-exercise
-2. localhost:5001/rick-and-morty/episode-locations
+$ localhost:5001/rick-and-morty/char-counter-exercise
+$ localhost:5001/rick-and-morty/episode-locations
