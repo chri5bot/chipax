@@ -5,3 +5,7 @@ export const reduceArrayToString = (array) => {
 export const charCounter = (str, char) => {
   return str.toLowerCase().split(char).length - 1;
 };
+
+export const getLastItemUrl = (url) => {
+  return url.substring(url.lastIndexOf('/') + 1);
+};

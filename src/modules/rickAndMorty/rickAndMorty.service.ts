@@ -1,6 +1,10 @@
 import { Injectable, HttpService } from '@nestjs/common';
 import AppLog from 'logger/logger.service';
-import { reduceArrayToString, charCounter } from 'helpers/strings';
+import {
+  reduceArrayToString,
+  charCounter,
+  getLastItemUrl,
+} from 'helpers/strings';
 
 @Injectable()
 export default class RickAndMortyService {
@@ -16,6 +20,21 @@ export default class RickAndMortyService {
     try {
       const result = await this.httpService
         .get(`https://rickandmortyapi.com/api/character?page=${page}`)
+        .toPromise();
+      return result?.data;
+    } catch (error) {
+      this.log.error(error);
+    }
+  }
+
+  /**
+   * Fetch Rick and Morty Characters by ids
+   */
+  async fetchRickAndMortyCharactersById(ids): Promise<any> {
+    this.log.debug(`Fetching rick and morty characters by ids: ${ids}`);
+    try {
+      const result = await this.httpService
+        .get(`https://rickandmortyapi.com/api/character/${ids}`)
         .toPromise();
       return result?.data;
     } catch (error) {
@@ -125,7 +144,8 @@ export default class RickAndMortyService {
    * Char counter exercise
    */
   async charCounterExercise(): Promise<any> {
-    this.log.debug('Char Counter Exercise');
+    const exerciseName = 'Char Counter Exercise';
+    this.log.debug(`${exerciseName}`);
     const start = Date.now();
 
     const allData = Promise.all([
@@ -134,7 +154,7 @@ export default class RickAndMortyService {
       this.getAllCharacters(),
     ])
       .then((responses) => {
-        return responses.map((response) => response);
+        return responses;
       })
       .catch((e) => {
         this.log.error(e);
@@ -184,6 +204,46 @@ export default class RickAndMortyService {
           char: character.char,
           count: charCounterCharacters,
           resource: character.resource,
+        },
+      ],
+    };
+  }
+
+  /**
+   * episode Locations exercise
+   */
+  async episodeLocationsExercise(): Promise<any> {
+    const exerciseName = 'Episode locations';
+    this.log.debug(`${exerciseName}`);
+    const start = Date.now();
+
+    const allEpisodes = await this.getAllEpisodes();
+    const test = allEpisodes.map(({ results }) =>
+      results.map(({ name, episode, characters }) => {
+        const characterIds = characters.map((character) =>
+          getLastItemUrl(character),
+        );
+
+        return { name, episode, characters, characterIds };
+      }),
+    );
+
+    const duration = Date.now() - start;
+
+    return {
+      exercise_name: exerciseName,
+      time: `${duration} ms`,
+      in_time: 3000 >= duration,
+      test,
+      results: [
+        {
+          name: 'Pickle Rick',
+          episode: 'S03E03',
+          locations: [
+            'Earth (C-137)',
+            'Earth (Replacement Dimension)',
+            'unknown',
+          ],
         },
       ],
     };

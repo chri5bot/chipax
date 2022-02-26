@@ -1,4 +1,4 @@
-import { reduceArrayToString, charCounter } from '../strings';
+import { reduceArrayToString, charCounter, getLastItemUrl } from '../strings';
 
 describe('Strings', () => {
   test('Reduce Array to String', () => {
@@ -27,5 +27,13 @@ describe('Strings', () => {
     const result = charCounter(test, 'a');
 
     expect(result).toBe(6);
+  });
+
+  test('Get last item url', () => {
+    const test = 'https://rickandmortyapi.com/api/character/240';
+
+    const result = getLastItemUrl(test);
+
+    expect(result).toBe('240');
   });
 });
