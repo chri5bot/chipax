@@ -218,14 +218,32 @@ export default class RickAndMortyService {
     const start = Date.now();
 
     const allEpisodes = await this.getAllEpisodes();
-    const test = allEpisodes.map(({ results }) =>
-      results.map(({ name, episode, characters }) => {
-        const characterIds = characters.map((character) =>
-          getLastItemUrl(character),
-        );
+    const allEpisodeCharacters = allEpisodes
+      .map(({ results }) =>
+        results.map(({ name, episode, characters }) => {
+          const characterIds = characters.map((character) =>
+            getLastItemUrl(character),
+          );
 
-        return { name, episode, characters, characterIds };
-      }),
+          return {
+            name,
+            episode,
+            characterIds,
+          };
+        }),
+      )
+      .reduce((prev, curr) => prev.concat(curr));
+
+    const results = await Promise.all(
+      allEpisodeCharacters.map(
+        async ({ characterIds, ...episodeCharacter }) => {
+          const characters = await this.fetchRickAndMortyCharactersById(
+            characterIds,
+          );
+          const locations = characters.map(({ location: { name } }) => name);
+          return { locations: [...new Set(locations)], ...episodeCharacter };
+        },
+      ),
     );
 
     const duration = Date.now() - start;
@@ -234,18 +252,7 @@ export default class RickAndMortyService {
       exercise_name: exerciseName,
       time: `${duration} ms`,
       in_time: 3000 >= duration,
-      test,
-      results: [
-        {
-          name: 'Pickle Rick',
-          episode: 'S03E03',
-          locations: [
-            'Earth (C-137)',
-            'Earth (Replacement Dimension)',
-            'unknown',
-          ],
-        },
-      ],
+      results,
     };
   }
 }
